@@ -17,12 +17,22 @@ public class HttpServletRequestWrapper extends ServletRequestWrapper implements 
     }
 
     @Override
+    public Enumeration<String> getHeaders(String name) {
+        return null;
+    }
+
+    @Override
     public String getQueryString() {
         return null;
     }
 
     @Override
     public String getRequestedSessionId() {
+        return null;
+    }
+
+    @Override
+    public String getRequestURI() {
         return null;
     }
 

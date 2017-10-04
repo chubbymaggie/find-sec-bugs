@@ -17,20 +17,17 @@
  */
 package com.h3xstream.findsecbugs.injection.script;
 
-import com.h3xstream.findsecbugs.injection.InjectionDetector;
-import com.h3xstream.findsecbugs.injection.InjectionSource;
+import com.h3xstream.findsecbugs.injection.BasicInjectionDetector;
 import edu.umd.cs.findbugs.BugReporter;
 
-public class ScriptInjectionDetector extends InjectionDetector {
-
+public class ScriptInjectionDetector extends BasicInjectionDetector {
 
     public ScriptInjectionDetector(BugReporter bugReporter) {
         super(bugReporter);
-    }
+        loadConfiguredSinks("spel.txt", "SPEL_INJECTION");
+        loadConfiguredSinks("script-engine.txt", "SCRIPT_ENGINE_INJECTION");
+        loadConfiguredSinks("el.txt", "EL_INJECTION");
+        loadConfiguredSinks("seam-el.txt", "SEAM_LOG_INJECTION");
 
-    @Override
-    public InjectionSource[] getInjectionSource() {
-        return new InjectionSource[] {new ScriptEngineSource(),new SpelSource()};
     }
-
 }

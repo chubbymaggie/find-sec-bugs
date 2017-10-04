@@ -18,6 +18,8 @@
 package com.h3xstream.findsecbugs.common;
 
 import edu.umd.cs.findbugs.OpcodeStack;
+import org.apache.bcel.generic.LocalVariableGen;
+import org.apache.bcel.generic.MethodGen;
 
 public class StackUtils {
 
@@ -37,22 +39,13 @@ public class StackUtils {
         return item.getConstant() != null && item.getConstant() instanceof Integer;
     }
 
-    /**
-     * @param stack
-     * @return If at least one parameters has a variable string.
-     */
-    public static boolean hasVariableString(OpcodeStack stack) {
-        boolean hasStringParam = false;
-
-        for (int i = 0; i < stack.getStackDepth(); i++) {
-            OpcodeStack.Item item = stack.getStackItem(i);
-            if ("[Ljava/lang/String;".equals(item.getSignature())) {
-                hasStringParam = true;
-                if (isVariableString(item)) {
-                    return true;
-                }
+    public static LocalVariableGen getLocalVariable(MethodGen methodGen, int index) {
+        for(LocalVariableGen local : methodGen.getLocalVariables()) {
+            if(local.getIndex() == index) {
+                return local;
             }
         }
-        return !hasStringParam;
+        return null;
     }
+
 }

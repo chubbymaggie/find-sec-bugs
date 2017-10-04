@@ -1,6 +1,7 @@
 package javax.servlet;
 
 import java.util.Enumeration;
+import java.util.Locale;
 import java.util.Map;
 
 public class ServletRequestWrapper implements ServletRequest {
@@ -36,6 +37,21 @@ public class ServletRequestWrapper implements ServletRequest {
 
     @Override
     public Map getParameterMap() {
+        return null;
+    }
+
+    @Override
+    public Locale getLocale() {
+        return null;
+    }
+
+    @Override
+    public RequestDispatcher getRequestDispatcher(String path) {
+        return null;
+    }
+
+    @Override
+    public ServletContext getServletContext() {
         return null;
     }
 }

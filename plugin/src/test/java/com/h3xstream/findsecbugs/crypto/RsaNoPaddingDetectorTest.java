@@ -19,13 +19,10 @@ package com.h3xstream.findsecbugs.crypto;
 
 import com.h3xstream.findbugs.test.BaseDetectorTest;
 import com.h3xstream.findbugs.test.EasyBugReporter;
-import org.testng.annotations.Test;
-
-import java.util.Arrays;
-
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import org.testng.annotations.Test;
 
 public class RsaNoPaddingDetectorTest extends BaseDetectorTest {
 
@@ -37,10 +34,18 @@ public class RsaNoPaddingDetectorTest extends BaseDetectorTest {
         };
 
         //Run the analysis
-        EasyBugReporter reporter = spy(new EasyBugReporter());
+        EasyBugReporter reporter = spy(new SecurityReporter());
         analyze(files, reporter);
 
         //Assertions
+        verify(reporter).doReportBug(
+                bugDefinition()
+                        .bugType("RSA_NO_PADDING")
+                        .inClass("RsaNoPadding")
+                        .inMethod("rsaCipherWeak")
+                        .atLine(17)
+                        .build()
+        );
         verify(reporter).doReportBug(
                 bugDefinition()
                         .bugType("RSA_NO_PADDING")
@@ -50,10 +55,12 @@ public class RsaNoPaddingDetectorTest extends BaseDetectorTest {
                         .build()
         );
 
-        verify(reporter).doReportBug(
+        verify(reporter, never()).doReportBug(
                 bugDefinition()
-                        .bugType("RSA_NO_PADDING")
-                        .build()
+                .bugType("RSA_NO_PADDING")
+                .inClass("RsaNoPadding")
+                .inMethod("rsaCipherOk")
+                .build()
         );
     }
 

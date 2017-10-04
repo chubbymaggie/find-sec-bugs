@@ -1,6 +1,7 @@
 package javax.servlet;
 
 import java.util.Enumeration;
+import java.util.Locale;
 import java.util.Map;
 
 public interface ServletRequest {
@@ -17,4 +18,9 @@ public interface ServletRequest {
 
     Map getParameterMap();
 
+    Locale getLocale();
+
+    RequestDispatcher getRequestDispatcher(String path);
+
+    ServletContext getServletContext();
 }

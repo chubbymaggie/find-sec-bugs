@@ -20,8 +20,18 @@ package com.h3xstream.findbugs.test.matcher;
 import edu.umd.cs.findbugs.*;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class BugInstanceMatcher extends BaseMatcher<BugInstance> {
+
+    private static final Logger log = LoggerFactory.getLogger(BugInstanceMatcherBuilder.class);
+
+    private static final Pattern ANON_FUNCTION_SCALA_PATTERN = Pattern.compile("\\$\\$anonfun\\$([^\\$]+)\\$");
 
     private String bugType;
     private String className;
@@ -29,6 +39,9 @@ public class BugInstanceMatcher extends BaseMatcher<BugInstance> {
     private String fieldName;
     private Integer lineNumber;
     private Integer lineNumberApprox;
+    private String priority;
+    private String jspFile;
+    private List<Integer> multipleChoicesLine;
 
     /**
      * All the parameters are optional. Only the non-null parameters are used.
@@ -38,14 +51,21 @@ public class BugInstanceMatcher extends BaseMatcher<BugInstance> {
      * @param methodName Method name
      * @param fieldName  Field name
      * @param lineNumber Line number
+     * @param lineNumberApprox Approximate line for test samples that are unstable (Historically the JSP samples)
+     * @param priority   Priority
+     * @param jspFile JSP file name
+     * @param multipleChoicesLine At least of the line (JSP samples specific)
      */
-    public BugInstanceMatcher(String bugType, String className, String methodName, String fieldName, Integer lineNumber, Integer lineNumberApprox) {
+    public BugInstanceMatcher(String bugType, String className, String methodName, String fieldName, Integer lineNumber, Integer lineNumberApprox, String priority, String jspFile, List<Integer> multipleChoicesLine) {
         this.bugType = bugType;
         this.className = className;
         this.methodName = methodName;
         this.fieldName = fieldName;
         this.lineNumber = lineNumber;
         this.lineNumberApprox = lineNumberApprox;
+        this.priority = priority;
+        this.jspFile = jspFile;
+        this.multipleChoicesLine = multipleChoicesLine;
     }
 
     @Override
@@ -57,18 +77,35 @@ public class BugInstanceMatcher extends BaseMatcher<BugInstance> {
             if (bugType != null) {
                 criteriaMatches &= bugInstance.getType().equals(bugType);
             }
+            if (priority != null) {
+                criteriaMatches &= bugInstance.getPriorityString().equals(priority);
+            }
             if (className != null) {
                 ClassAnnotation classAnn = extractBugAnnotation(bugInstance, ClassAnnotation.class);
                 if (classAnn == null) return false;
 
                 String fullName = classAnn.getClassName();
-                String simpleName = fullName.substring(fullName.lastIndexOf(".") + 1);
-                criteriaMatches &= fullName.equals(className) || simpleName.equals(className);
+                int startDot = fullName.lastIndexOf(".") + 1;
+                int endDollar = fullName.indexOf('$');
+                String simpleName = fullName.substring(startDot != -1 ? startDot : 0, endDollar != -1 ? endDollar : fullName.length());
+                String simpleNameInner = fullName.substring(startDot != -1 ? startDot : 0, fullName.length());
+                criteriaMatches &= fullName.equals(className) || simpleName.equals(className) || simpleNameInner.equals(className);
             }
             if (methodName != null) {
                 MethodAnnotation methodAnn = extractBugAnnotation(bugInstance, MethodAnnotation.class);
+                ClassAnnotation classAnn = extractBugAnnotation(bugInstance, ClassAnnotation.class);
+                String fullClassName = classAnn.getClassName();
                 if (methodAnn == null) return false;
-                criteriaMatches &= methodAnn.getMethodName().equals(methodName);
+
+                if(methodAnn.getMethodName().startsWith("apply") && fullClassName != null) {
+                    Matcher m = ANON_FUNCTION_SCALA_PATTERN.matcher(fullClassName);
+                    if(m.find()) { //Scala function enclose in
+                        criteriaMatches &= methodAnn.getMethodName().equals(methodName) || methodName.equals(m.group(1));
+                    }
+                }
+                else { //
+                    criteriaMatches &= methodAnn.getMethodName().equals(methodName);
+                }
             }
             if (fieldName != null) {
                 FieldAnnotation fieldAnn = extractBugAnnotation(bugInstance, FieldAnnotation.class);
@@ -84,6 +121,26 @@ public class BugInstanceMatcher extends BaseMatcher<BugInstance> {
                 SourceLineAnnotation srcAnn = extractBugAnnotation(bugInstance, SourceLineAnnotation.class);
                 if (srcAnn == null) return false;
                 criteriaMatches &= srcAnn.getStartLine()-1 <= lineNumberApprox && lineNumberApprox <= srcAnn.getEndLine()+1;
+            }
+            if(jspFile != null) {
+                ClassAnnotation classAnn = extractBugAnnotation(bugInstance, ClassAnnotation.class);
+                String fullName = classAnn.getClassName().replaceAll("\\.","/").replaceAll("_005f","_").replaceAll("_jsp", ".jsp");
+                //String simpleName = fullName.substring(fullName.lastIndexOf("/") + 1);
+                criteriaMatches &= fullName.endsWith(jspFile);
+            }
+            if (multipleChoicesLine != null) {
+                SourceLineAnnotation srcAnn = extractBugAnnotation(bugInstance, SourceLineAnnotation.class);
+                if (srcAnn == null) return false;
+                boolean found = false;
+                for(Integer potentialMatch : multipleChoicesLine) {
+                    if(srcAnn.getStartLine()-1 <= potentialMatch && potentialMatch <= srcAnn.getEndLine()+1) {
+                        found = true;
+                    }
+                }
+                //if(!found) {
+                    //log.info("The bug was between lines "+srcAnn.getStartLine()+" and "+srcAnn.getEndLine());
+                //}
+                criteriaMatches &= found;
             }
             return criteriaMatches;
         } else {

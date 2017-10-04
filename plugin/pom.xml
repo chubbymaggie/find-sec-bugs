@@ -5,7 +5,7 @@
     <parent>
         <groupId>com.h3xstream.findsecbugs</groupId>
         <artifactId>findsecbugs-root-pom</artifactId>
-        <version>1.4.2-SNAPSHOT</version>
+        <version>1.8.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -25,7 +25,7 @@
             <!-- Jar packaging -->
             <plugin>
                 <artifactId>maven-jar-plugin</artifactId>
-                <version>2.2</version>
+                <version>3.0.2</version>
                 <configuration>
                     <archive>
                         <addMavenDescriptor>false</addMavenDescriptor>
@@ -60,7 +60,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.12</version>
+                <version>2.20</version>
                 <configuration>
                     <properties>
                         <property>
@@ -68,15 +68,16 @@
                             <value>com.h3xstream.testng.VerboseTestListener</value>
                         </property>
                     </properties>
+  	           <enableAssertions>true</enableAssertions>
                 </configuration>
             </plugin>
 
 
             <!-- Compilation of the JSP test pages -->
             <plugin>
-                <groupId>org.mortbay.jetty</groupId>
+                <groupId>org.eclipse.jetty</groupId>
                 <artifactId>jetty-jspc-maven-plugin</artifactId>
-                <version>8.1.11.v20130520</version>
+                <version>9.4.6.v20170531</version>
                 <executions>
                     <execution>
                         <id>jspc</id>
@@ -86,10 +87,14 @@
                             <goal>jspc</goal>
                         </goals>
                         <configuration>
+                            <jspc>
+                                <smapSuppressed>false</smapSuppressed>
+                                <smapDumped>true</smapDumped>
+                            </jspc>
+                            <keepSources>true</keepSources>
                             <!-- Use the test folders to avoid polluting the resulting jar -->
                             <generatedClasses>${project.build.directory}/test-classes</generatedClasses>
                             <webAppSourceDirectory>${basedir}/src/test/webapp</webAppSourceDirectory>
-                            <suppressSmap>false</suppressSmap>
                             <useProvidedScope>true</useProvidedScope>
                         </configuration>
                     </execution>
@@ -100,7 +105,7 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>cobertura-maven-plugin</artifactId>
-                <version>2.5.1</version>
+                <version>2.7</version>
                 <configuration>
                     <formats>
                         <format>html</format>
@@ -115,15 +120,34 @@
             <plugin>
                 <groupId>org.eluder.coveralls</groupId>
                 <artifactId>coveralls-maven-plugin</artifactId>
-                <version>1.2.0</version>
             </plugin>
 
-            <!-- Surefire -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.18.1</version>
-            </plugin>
+            <!--
+              Verify that the sources of this module are API compatible
+              with the Java version officially used by FindBugs.
+              The test sources are not checked by this plugin
+              (see https://github.com/mojohaus/animal-sniffer/issues/5),
+              so more recent Java APIs can be used in the tests.
+            -->
+            <!--<plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>animal-sniffer-maven-plugin</artifactId>
+                <version>1.15</version>
+                <configuration>
+                    <signature>
+                        <groupId>org.codehaus.mojo.signature</groupId>
+                        <artifactId>java17</artifactId>
+                        <version>1.0</version>
+                    </signature>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>-->
 
         </plugins>
     </build>
@@ -132,8 +156,8 @@
 
         <!-- FindBugs API (Detector interface and transitive deps like BCEL..) -->
         <dependency>
-            <groupId>com.google.code.findbugs</groupId>
-            <artifactId>findbugs</artifactId>
+            <groupId>com.github.spotbugs</groupId>
+            <artifactId>spotbugs</artifactId>
             <scope>provided</scope>
         </dependency>
 
@@ -145,7 +169,6 @@
             <type>test-jar</type>
             <scope>test</scope>
         </dependency>
-
 
         <!-- Unit Testing libraries -->
 
@@ -168,11 +191,11 @@
         </dependency>
 
         <dependency>
-            <groupId>org.apache.commons</groupId>
+            <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
             <scope>test</scope>
         </dependency>
-
+        
         <dependency>
             <groupId>com.h3xstream.findsecbugs</groupId>
             <artifactId>findsecbugs-plugin-deps</artifactId>

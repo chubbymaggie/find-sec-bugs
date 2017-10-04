@@ -17,11 +17,14 @@
  */
 package com.h3xstream.testng;
 
+import com.h3xstream.findbugs.test.EasyBugReporter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.ITestContext;
 import org.testng.ITestResult;
 import org.testng.TestListenerAdapter;
+
+import java.lang.management.ManagementFactory;
 
 /**
  * This listener is useful to add more detail about test failure.
@@ -39,10 +42,18 @@ public class VerboseTestListener extends TestListenerAdapter {
     @Override
     public void onStart(ITestContext ctx) {
         log.info("<<<<<<<<<<<<<<<<<<<< {} started >>>>>>>>>>>>>>>>>>>>", ctx.getName());
+        EasyBugReporter.runningFromMaven = true;
     }
 
     @Override
     public void onFinish(ITestContext ctx) {
+        System.gc();
+        Runtime rt = Runtime.getRuntime();
+        long inMb = 1024 * 1024;
+        log.info("Total memory : " + rt.totalMemory() / inMb);
+        log.info("Free memory  : " + rt.freeMemory() / inMb);
+        log.info("Memory usage : " + (rt.totalMemory() - rt.freeMemory()) / inMb);
+        log.info("Process      : " + ManagementFactory.getRuntimeMXBean().getName());
         log.info("<<<<<<<<<<<<<<<<<<<< {} finished >>>>>>>>>>>>>>>>>>>>", ctx.getName());
     }
 }

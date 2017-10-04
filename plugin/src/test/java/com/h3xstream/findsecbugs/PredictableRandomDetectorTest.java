@@ -35,41 +35,55 @@ public class PredictableRandomDetectorTest extends BaseDetectorTest {
         };
 
         //Run the analysis
-        EasyBugReporter reporter = spy(new EasyBugReporter());
+        EasyBugReporter reporter = spy(new SecurityReporter());
         analyze(files, reporter);
 
         //Assertions
-        verify(reporter, times(4)).doReportBug( //2 java api + 2 scala variations
-                bugDefinition()
-                        .bugType("PREDICTABLE_RANDOM")
-                        .build()
-        );
 
         //1rst variation new Random()
         verify(reporter).doReportBug(
                 bugDefinition()
                         .bugType("PREDICTABLE_RANDOM")
-                        .inClass("InsecureRandom").inMethod("newRandomObj").atLine(9)
+                        .inClass("InsecureRandom").inMethod("newRandomObj").atLine(10)
                         .build()
         );
         //2nd variation Math.random()
         verify(reporter).doReportBug(
                 bugDefinition()
                         .bugType("PREDICTABLE_RANDOM")
-                        .inClass("InsecureRandom").inMethod("mathRandom").atLine(16)
+                        .inClass("InsecureRandom").inMethod("mathRandom").atLine(17)
+                        .build()
+        );
+
+        //3nd variation ThreadLocalRandom.current()
+        verify(reporter).doReportBug(
+                bugDefinition()
+                        .bugType("PREDICTABLE_RANDOM")
+                        .inClass("InsecureRandom").inMethod("threadLocalRandom").atLine(22)
                         .build()
         );
 
         //Scala random number generator (mirror of java.util.Random)
-        for(Integer line : Arrays.asList(30,31)) {
+        for(Integer line : Arrays.asList(36,37)) {
             verify(reporter).doReportBug(
                     bugDefinition()
-                            .bugType("PREDICTABLE_RANDOM")
+                            .bugType("PREDICTABLE_RANDOM_SCALA")
                             .inClass("InsecureRandom").inMethod("scalaRandom").atLine(line)
                             .build()
             );
         }
 
+
+        verify(reporter, times(3)).doReportBug( //3 java api
+                bugDefinition()
+                        .bugType("PREDICTABLE_RANDOM")
+                        .build()
+        );
+        verify(reporter, times(2)).doReportBug( //2 scala variations
+                bugDefinition()
+                        .bugType("PREDICTABLE_RANDOM_SCALA")
+                        .build()
+        );
     }
 
 }

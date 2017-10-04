@@ -35,7 +35,7 @@ public class JpaInjectionSourceTest extends BaseDetectorTest {
         };
 
         //Run the analysis
-        EasyBugReporter reporter = spy(new EasyBugReporter());
+        EasyBugReporter reporter = spy(new SecurityReporter());
         analyze(files, reporter);
 
         verify(reporter).doReportBug(
@@ -51,7 +51,7 @@ public class JpaInjectionSourceTest extends BaseDetectorTest {
                         .build()
         );
 
-        //Only the previous 2 cases should be marked as vulnerable
+        //Only the previous 5 cases should be marked as vulnerable
         //2 createQuery + 3 createNativeQuery detect
         verify(reporter, times(2+3)).doReportBug(
                 bugDefinition()
@@ -68,7 +68,7 @@ public class JpaInjectionSourceTest extends BaseDetectorTest {
         };
 
         //Run the analysis
-        EasyBugReporter reporter = spy(new EasyBugReporter());
+        EasyBugReporter reporter = spy(new SecurityReporter());
         analyze(files, reporter);
 
         //All 3 method signatures are detected

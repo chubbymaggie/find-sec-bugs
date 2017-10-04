@@ -35,7 +35,7 @@ public class ScriptEngineInjectionTest extends BaseDetectorTest {
         };
 
         //Run the analysis
-        EasyBugReporter reporter = spy(new EasyBugReporter());
+        EasyBugReporter reporter = spy(new SecurityReporter());
         analyze(files, reporter);
 
         verify(reporter).doReportBug(
@@ -46,7 +46,7 @@ public class ScriptEngineInjectionTest extends BaseDetectorTest {
                         .build()
         );
 
-        verify(reporter).doReportBug(
+        verify(reporter, times(1)).doReportBug(
                 bugDefinition()
                         .bugType("SCRIPT_ENGINE_INJECTION")
                         .inClass("ScriptEngineSample")

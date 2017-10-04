@@ -26,17 +26,28 @@ import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class EasyBugReporter extends AbstractBugReporter {
 
     private BugCollection bugCollection = new SortedBugCollection();
 
     private int bugInstanceCount;
+    public static boolean runningFromMaven = false;
 
     private static final Logger log = LoggerFactory.getLogger(EasyBugReporter.class);
 
 
+    private List<String> includeCategories = new ArrayList<String>();
+
     public EasyBugReporter() {
         setPriorityThreshold(20);
+    }
+
+
+    public List<String> getIncludeCategories() {
+        return includeCategories;
     }
 
     @Override
@@ -56,29 +67,58 @@ public class EasyBugReporter extends AbstractBugReporter {
 
     @Override
     public void doReportBug(BugInstance bugInstance) {
-        StringBuilder bugDetail = new StringBuilder();
-        bugDetail
-                .append("\n------------------------------------------------------")
-                .append("\nNew Bug Instance: [" + ++bugInstanceCount + "]")
-                .append("\n  message=" + bugInstance.getMessage())
-                .append("\n  bugType=" + bugInstance.getBugPattern().getType())
-                .append("  category=" + bugInstance.getCategoryAbbrev());
-        if (bugInstance.getPrimaryClass() != null) {
-            bugDetail.append("\n  class=" + bugInstance.getPrimaryClass().getClassName());
+        if(includeCategories.size() > 0 && !includeCategories.contains(bugInstance.getCategoryAbbrev())) {
+            return;
         }
-        if (bugInstance.getPrimaryMethod() != null) {
-            bugDetail.append("  method=" + bugInstance.getPrimaryMethod().getMethodName());
+
+        if(runningFromMaven) {
+            StringBuilder bugDetail = new StringBuilder();
+            bugDetail.append("New bug ").append(bugInstance.getBugPattern().getType()).append(" ");
+            if (bugInstance.getPrimaryClass() != null && bugInstance.getPrimaryMethod() != null && bugInstance.getPrimarySourceLineAnnotation() != null) {
+                bugDetail.append("[")
+                        .append(bugInstance.getPrimaryClass().getSimpleClassName())
+                        .append(".")
+                        .append(bugInstance.getPrimaryMethod().getMethodName())
+                        .append("() at ")
+                        .append(bugInstance.getPrimarySourceLineAnnotation().getStartLine())
+                        .append("]");
+            }
+            else if (bugInstance.getPrimaryClass() != null && bugInstance.getPrimaryField() != null && bugInstance.getPrimarySourceLineAnnotation() != null) {
+                bugDetail.append("[")
+                        .append(bugInstance.getPrimaryClass().getSimpleClassName())
+                        .append(".")
+                        .append(bugInstance.getPrimaryField())
+                        .append(" at ")
+                        .append(bugInstance.getPrimarySourceLineAnnotation().getStartLine())
+                        .append("]");
+            }
+            log.info(bugDetail.toString());
         }
-        if (bugInstance.getPrimaryField() != null) {
-            bugDetail.append("  field=" + bugInstance.getPrimaryField().getFieldName());
+        else {
+            StringBuilder bugDetail = new StringBuilder();
+            bugDetail
+                    .append("\n------------------------------------------------------")
+                    .append("\nNew Bug Instance: [" + ++bugInstanceCount + "]")
+                    .append("\n  message=" + bugInstance.getMessage())
+                    .append("\n  bugType=" + bugInstance.getBugPattern().getType())
+                    .append("  priority=" + bugInstance.getPriorityString())
+                    .append("  category=" + bugInstance.getCategoryAbbrev());
+            if (bugInstance.getPrimaryClass() != null) {
+                bugDetail.append("\n  class=" + bugInstance.getPrimaryClass().getClassName());
+            }
+            if (bugInstance.getPrimaryMethod() != null) {
+                bugDetail.append("  method=" + bugInstance.getPrimaryMethod().getMethodName());
+            }
+            if (bugInstance.getPrimaryField() != null) {
+                bugDetail.append("  field=" + bugInstance.getPrimaryField().getFieldName());
+            }
+            if (bugInstance.getPrimarySourceLineAnnotation() != null) {
+                bugDetail.append("  line=" + bugInstance.getPrimarySourceLineAnnotation().getStartLine());
+            }
+            bugDetail.append("\n------------------------------------------------------");
+            log.info(bugDetail.toString());
+            //bugCollection.add(bugInstance);
         }
-        if (bugInstance.getPrimarySourceLineAnnotation() != null) {
-            bugDetail.append("  line=" + bugInstance.getPrimarySourceLineAnnotation().getStartLine());
-        }
-        bugDetail
-                .append("\n------------------------------------------------------");
-        log.info(bugDetail.toString());
-        //bugCollection.add(bugInstance);
     }
 
     @Override
@@ -92,7 +132,7 @@ public class EasyBugReporter extends AbstractBugReporter {
 
     @Override
     public void reportMissingClass(String className) {
-        log.warn("Missing class " + className);
+//        log.warn("Missing class " + className);
     }
 
 }

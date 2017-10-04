@@ -36,11 +36,11 @@ public class TapestryEndpointDetectorTest extends BaseDetectorTest {
     public void detectTapestryPageWithFrameworkReference() throws Exception {
         //Locate test code
         String[] files = {
-                getClassFilePath("testcode/pages/sub/TapestryPage")
+                getClassFilePath("testcode/pages/TapestryPage")
         };
 
         //Run the analysis
-        EasyBugReporter reporter = spy(new EasyBugReporter());
+        EasyBugReporter reporter = spy(new SecurityReporter());
         analyze(files, reporter);
 
         verify(reporter).doReportBug(
@@ -64,10 +64,10 @@ public class TapestryEndpointDetectorTest extends BaseDetectorTest {
         };
 
         //Run the analysis
-        EasyBugReporter reporter = spy(new EasyBugReporter());
+        EasyBugReporter reporter = spy(new SecurityReporter());
         analyze(files, reporter);
 
-        verify(reporter).doReportBug(
+        verify(reporter,never()).doReportBug(
                 bugDefinition()
                         .bugType("TAPESTRY_ENDPOINT")
                         .inClass("Index")
@@ -88,7 +88,7 @@ public class TapestryEndpointDetectorTest extends BaseDetectorTest {
         };
 
         //Run the analysis
-        EasyBugReporter reporter = spy(new EasyBugReporter());
+        EasyBugReporter reporter = spy(new SecurityReporter());
         analyze(files, reporter);
 
         //

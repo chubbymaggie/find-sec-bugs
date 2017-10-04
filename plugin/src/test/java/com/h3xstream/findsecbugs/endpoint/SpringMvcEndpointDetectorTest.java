@@ -23,9 +23,7 @@ import org.testng.annotations.Test;
 
 import java.util.Arrays;
 
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 public class SpringMvcEndpointDetectorTest extends BaseDetectorTest {
 
@@ -37,17 +35,47 @@ public class SpringMvcEndpointDetectorTest extends BaseDetectorTest {
         };
 
         //Run the analysis
-        EasyBugReporter reporter = spy(new EasyBugReporter());
+        EasyBugReporter reporter = spy(new SecurityReporter());
         analyze(files, reporter);
 
 
         //Assertions
-        for (Integer line : Arrays.asList(18, 24)) {
-            verify(reporter, never()).doReportBug(
-                    bugDefinition()
-                            .bugType("XXE")
-                            .build()
-            );
-        }
+        verify(reporter).doReportBug(
+                bugDefinition().bugType("SPRING_ENDPOINT").inMethod("hello1").build()
+        );
+        verify(reporter).doReportBug(
+                bugDefinition().bugType("SPRING_ENDPOINT").inMethod("hello2").build()
+        );
+        verify(reporter).doReportBug(
+                bugDefinition().bugType("SPRING_ENDPOINT").inMethod("hello3").build()
+        );
+        verify(reporter).doReportBug(
+                bugDefinition().bugType("SPRING_ENDPOINT").inMethod("hello4").build()
+        );
+        verify(reporter).doReportBug(
+                bugDefinition().bugType("SPRING_ENDPOINT").inMethod("hello5").build()
+        );
+        verify(reporter).doReportBug(
+                bugDefinition().bugType("SPRING_ENDPOINT").inMethod("hello6").build()
+        );
+        verify(reporter).doReportBug(
+                bugDefinition().bugType("SPRING_ENDPOINT").inMethod("helloGet").build()
+        );
+        verify(reporter).doReportBug(
+                bugDefinition().bugType("SPRING_ENDPOINT").inMethod("helloPost").build()
+        );
+        verify(reporter).doReportBug(
+                bugDefinition().bugType("SPRING_ENDPOINT").inMethod("helloPut").build()
+        );
+        verify(reporter).doReportBug(
+                bugDefinition().bugType("SPRING_ENDPOINT").inMethod("helloDelete").build()
+        );
+        verify(reporter).doReportBug(
+                bugDefinition().bugType("SPRING_ENDPOINT").inMethod("helloPatch").build()
+        );
+
+        verify(reporter, times(11)).doReportBug(
+                bugDefinition().bugType("SPRING_ENDPOINT").build()
+        );
     }
 }

@@ -19,31 +19,37 @@ package com.h3xstream.findsecbugs.injection.custom;
 
 import com.h3xstream.findbugs.test.BaseDetectorTest;
 import com.h3xstream.findbugs.test.EasyBugReporter;
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
-import org.testng.annotations.BeforeTest;
-
-import java.util.Arrays;
 
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
 public class CustomInjectionDetectorTest extends BaseDetectorTest {
 
-    @BeforeTest
-    public void before() {
-        String path = this.getClass().getResource("CustomInjectionSource.properties").getPath();
+    @BeforeClass
+    public void beforeClass() {
+        String path = this.getClass().getResource("/com/h3xstream/findsecbugs/injection/custom/CustomInjectionSource.txt").getPath();
         System.setProperty("findsecbugs.injection.sources", path);
+    }
+
+    @AfterClass
+    public void afterClass() {
+        System.setProperty("findsecbugs.injection.sources", "");
     }
 
     @Test
     public void detectInjection() throws Exception {
+        //Logger.setLevel(Level.DEBUG.levelInt);
+
         //Locate test code
         String[] files = {
                 getClassFilePath("testcode/sqli/CustomInjection")
         };
 
         //Run the analysis
-        EasyBugReporter reporter = spy(new EasyBugReporter());
+        EasyBugReporter reporter = spy(new SecurityReporter());
         analyze(files, reporter);
 
         verify(reporter).doReportBug(

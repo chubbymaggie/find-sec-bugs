@@ -17,22 +17,50 @@
  */
 package com.h3xstream.findsecbugs.common;
 
+import edu.umd.cs.findbugs.ba.AnalysisContext;
+import edu.umd.cs.findbugs.ba.Hierarchy;
 import org.apache.bcel.classfile.JavaClass;
 
 public class InterfaceUtils {
+    /**
+     * Test if the given class is a subtype of ONE of the super classes given.
+     * <br/>
+     * The following test that the class is a subclass of Hashtable.
+     *
+     * <pre>
+     * boolean isHashtable = InterfaceUtils.isSubtype( classThatCouldBeAHashTable, "java.util.Hashtable");
+     * </pre>
+     *
+     * @param javaClass Class to test
+     * @param superClasses If classes extends or implements those classes
+     * @return
+     */
+    public static boolean isSubtype(JavaClass javaClass, String... superClasses) {
+        return isSubtype(javaClass.getClassName(),superClasses);
+    }
 
-
-    public static boolean classImplements(JavaClass javaClass, String interfaceName) {
-        String[] interfaces = javaClass.getInterfaceNames();
-        for (String name : interfaces) {
-            if (name.equals(interfaceName)) {
-                return true;
+    /**
+     * Test if the given class is a subtype of ONE of the super classes given.
+     * <br/>
+     * The following test that the class is a subclass of Hashtable.
+     * <pre>
+     * boolean isHashtable = InterfaceUtils.isSubtype( classThatCouldBeAHashTable, "java.util.Hashtable");
+     * </pre>
+     *
+     * @param className Class to test
+     * @param superClasses If classes extends or implements those classes
+     * @return
+     */
+    public static boolean isSubtype(String className, String... superClasses) {
+        for(String potentialSuperClass : superClasses) {
+            try {
+                if(Hierarchy.isSubtype(className, potentialSuperClass)) {
+                    return true;
+                }
+            } catch (ClassNotFoundException e) {
+                AnalysisContext.reportMissingClass(e);
             }
         }
         return false;
-    }
-
-    public static boolean classExtends(JavaClass javaClass, String superClass) {
-        return superClass.equals(javaClass.getSuperclassName());
     }
 }

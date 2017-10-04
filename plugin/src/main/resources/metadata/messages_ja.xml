@@ -264,7 +264,7 @@ Cookie: JSESSIONID=Any value of the user&#39;s choice!!??'''&quot;&gt;
 
 
     <!-- Cookie usage -->
-    <Detector class="com.h3xstream.findsecbugs.endpoint.CookieDetector">
+    <Detector class="com.h3xstream.findsecbugs.cookie.CookieReadDetector">
         <Details>直接的なクッキーの利用を特定します。</Details>
     </Detector>
 
@@ -288,7 +288,7 @@ HttpSession (HttpServletRequest.getSession()) を参照してください。</p>
 
 
     <!-- Path traversal -->
-    <Detector class="com.h3xstream.findsecbugs.PathTraversalDetector">
+    <Detector class="com.h3xstream.findsecbugs.file.PathTraversalDetector">
         <Details>パラメーターを通じたファイルシステムへのアクセス要求を特定します。</Details>
     </Detector>
 
@@ -297,7 +297,7 @@ HttpSession (HttpServletRequest.getSession()) を参照してください。</p>
         <LongDescription>メソッド {3} はユーザーの入力によって指定された場所のファイルを読み込みます。</LongDescription>
         <Details>
             <![CDATA[
-<p>ファイルはその内容を読み込むために開かれていますが、ファイル名は<b>入力</b>パラメーターから生じています。 
+<p>ファイルはその内容を読み込むために開かれていますが、ファイル名は<b>入力</b>パラメーターから生じています。
 フィルターされていないパラメーターがこのファイル API に渡された場合、ファイルシステムの任意の場所からファイルを読み込めるかもしれません。</p>
 <p>このルールは<b>潜在的な</b>パストラバーサルの脆弱性を特定します。多くの場合、組み立てられるファイルパスがユーザーによって操作されるとはありません。その場合、報告された事例は誤検知です。</p>
 <br/>
@@ -319,7 +319,7 @@ HttpSession (HttpServletRequest.getSession()) を参照してください。</p>
         <LongDescription>メソッド {3} はユーザーの入力によって指定された場所のファイルに書き込みます。</LongDescription>
         <Details>
             <![CDATA[
-<p>ファイルはその内容を書き込むために開かれていますが、ファイル名は<b>入力</b>パラメーターから生じています。 
+<p>ファイルはその内容を書き込むために開かれていますが、ファイル名は<b>入力</b>パラメーターから生じています。
 フィルターされていないパラメーターがこのファイル API に渡された場合、ファイルシステムの任意の場所からファイルを変更できるかもしれません。</p>
 <p>このルールは<b>潜在的な</b>パストラバーサルの脆弱性を特定します。多くの場合、組み立てられるファイルパスがユーザーによって操作されるとはありません。その場合、報告された事例は誤検知です。</p>
 <br/>
@@ -573,7 +573,7 @@ OS レベルであるので、たとえ Java 自体が Null バイトを気に�
             <![CDATA[
 <p>使用しているアルゴリズムは推奨されるメッセージダイジェストではありません。</p>
 <p><a href="http://csrc.nist.gov/groups/ST/toolkit/secure_hashing.html">NIST</a> は、SHA-1、 SHA-224*、 SHA-256、 SHA-384、 SHA-512、 SHA-512/224、 または SHA-512/256 の使用を推奨しています。</p>
-<p><small>* SHA-224 アルゴリズムは <a href="http://docs.oracle.com/javase/6/docs/technotes/guides/security/SunProviders.html#SUNProvider">SUN プロバイダー</a>では提供していません。</small></p>
+<p>* SHA-224 アルゴリズムは <a href="http://docs.oracle.com/javase/6/docs/technotes/guides/security/SunProviders.html#SUNProvider">SUN プロバイダー</a>では提供していません。</p>
 <p>承認されたアルゴリズムのいずれかを使用するように実装をアップグレードしてください。あなたのセキュリティ仕様要件に合った十分に強いアルゴリズムを使用してください。</p>
 <br/>
 <p>
@@ -631,7 +631,7 @@ sha256Digest.update(password.getBytes());</pre>
 
 
     <!-- FileUpload Filename -->
-    <Detector class="com.h3xstream.findsecbugs.FileUploadFilenameDetector">
+    <Detector class="com.h3xstream.findsecbugs.file.FileUploadFilenameDetector">
         <Details>ファイルアップロード API によって与えられたファイル名はクライアントによって改ざんされていることがあります。</Details>
     </Detector>
 
@@ -653,6 +653,10 @@ sha256Digest.update(password.getBytes());</pre>
 <p>
 <b>参考文献</b><br/>
 <a href="http://blogs.securiteam.com/index.php/archives/1268">Securiteam: File upload security recommendations</a><br/>
+<a href="http://cwe.mitre.org/data/definitions/22.html">CWE-22: Improper Limitation of a Pathname to a Restricted Directory ('Path Traversal')</a><br/>
+<a href="http://projects.webappsec.org/w/page/13246952/Path%20Traversal">WASC-33: Path Traversal</a><br/>
+<a href="https://www.owasp.org/index.php/Path_Traversal">OWASP: Path Traversal</a><br/>
+<a href="http://capec.mitre.org/data/definitions/126.html">CAPEC-126: Path Traversal</a><br/>
 <a href="http://cwe.mitre.org/data/definitions/22.html">CWE-22: Improper Limitation of a Pathname to a Restricted Directory ('Path Traversal')</a>
 </p>
 ]]>
@@ -699,7 +703,7 @@ sha256Digest.update(password.getBytes());</pre>
 
 
     <!-- SAXParser XXE -->
-    <Detector class="com.h3xstream.findsecbugs.xxe.SaxParserXxeDetector">
+    <Detector class="com.h3xstream.findsecbugs.xml.XxeDetector">
         <Details>XXE に脆弱な XML パーサーの使用を特定します。</Details>
     </Detector>
 
@@ -726,13 +730,13 @@ sha256Digest.update(password.getBytes());</pre>
 &lt;!DOCTYPE lolz [
  &lt;!ENTITY lol &quot;lol&quot;&gt;
  &lt;!ELEMENT lolz (#PCDATA)&gt;
- &lt;!ENTITY lol1 &quot;&lol;&lol;&lol;&lol;&lol;&lol;&lol;&lol;&lol;&lol;&quot;&gt;
- &lt;!ENTITY lol2 &quot;&lol1;&lol1;&lol1;&lol1;&lol1;&lol1;&lol1;&lol1;&lol1;&lol1;&quot;&gt;
- &lt;!ENTITY lol3 &quot;&lol2;&lol2;&lol2;&lol2;&lol2;&lol2;&lol2;&lol2;&lol2;&lol2;&quot;&gt;
+ &lt;!ENTITY lol1 &quot;&amp;lol;&amp;lol;&amp;lol;&amp;lol;&amp;lol;&amp;lol;&amp;lol;&amp;lol;&amp;lol;&amp;lol;&quot;&gt;
+ &lt;!ENTITY lol2 &quot;&amp;lol1;&amp;lol1;&amp;lol1;&amp;lol1;&amp;lol1;&amp;lol1;&amp;lol1;&amp;lol1;&amp;lol1;&amp;lol1;&quot;&gt;
+ &lt;!ENTITY lol3 &quot;&amp;lol2;&amp;lol2;&amp;lol2;&amp;lol2;&amp;lol2;&amp;lol2;&amp;lol2;&amp;lol2;&amp;lol2;&amp;lol2;&quot;&gt;
 [...]
- &lt;!ENTITY lol9 &quot;&lol8;&lol8;&lol8;&lol8;&lol8;&lol8;&lol8;&lol8;&lol8;&lol8;&quot;&gt;
+ &lt;!ENTITY lol9 &quot;&amp;lol8;&amp;lol8;&amp;lol8;&amp;lol8;&amp;lol8;&amp;lol8;&amp;lol8;&amp;lol8;&amp;lol8;&amp;lol8;&quot;&gt;
 ]&gt;
-&lt;lolz&gt;&lol9;&lt;/lolz&gt;</pre>
+&lt;lolz&gt;&amp;lol9;&lt;/lolz&gt;</pre>
 </p>
 
 <h3>解決策</h3>
@@ -809,13 +813,13 @@ parser.parse(inputStream, customHandler);</pre>
 &lt;!DOCTYPE lolz [
  &lt;!ENTITY lol &quot;lol&quot;&gt;
  &lt;!ELEMENT lolz (#PCDATA)&gt;
- &lt;!ENTITY lol1 &quot;&lol;&lol;&lol;&lol;&lol;&lol;&lol;&lol;&lol;&lol;&quot;&gt;
- &lt;!ENTITY lol2 &quot;&lol1;&lol1;&lol1;&lol1;&lol1;&lol1;&lol1;&lol1;&lol1;&lol1;&quot;&gt;
- &lt;!ENTITY lol3 &quot;&lol2;&lol2;&lol2;&lol2;&lol2;&lol2;&lol2;&lol2;&lol2;&lol2;&quot;&gt;
+ &lt;!ENTITY lol1 &quot;&amp;lol;&amp;lol;&amp;lol;&amp;lol;&amp;lol;&amp;lol;&amp;lol;&amp;lol;&amp;lol;&amp;lol;&quot;&gt;
+ &lt;!ENTITY lol2 &quot;&amp;lol1;&amp;lol1;&amp;lol1;&amp;lol1;&amp;lol1;&amp;lol1;&amp;lol1;&amp;lol1;&amp;lol1;&amp;lol1;&quot;&gt;
+ &lt;!ENTITY lol3 &quot;&amp;lol2;&amp;lol2;&amp;lol2;&amp;lol2;&amp;lol2;&amp;lol2;&amp;lol2;&amp;lol2;&amp;lol2;&amp;lol2;&quot;&gt;
 [...]
- &lt;!ENTITY lol9 &quot;&lol8;&lol8;&lol8;&lol8;&lol8;&lol8;&lol8;&lol8;&lol8;&lol8;&quot;&gt;
+ &lt;!ENTITY lol9 &quot;&amp;lol8;&amp;lol8;&amp;lol8;&amp;lol8;&amp;lol8;&amp;lol8;&amp;lol8;&amp;lol8;&amp;lol8;&amp;lol8;&quot;&gt;
 ]&gt;
-&lt;lolz&gt;&lol9;&lt;/lolz&gt;</pre>
+&lt;lolz&gt;&amp;lol9;&lt;/lolz&gt;</pre>
 </p>
 
 <h3>解決策</h3>
@@ -892,13 +896,13 @@ reader.parse(new InputSource(inputStream));</pre>
 &lt;!DOCTYPE lolz [
  &lt;!ENTITY lol &quot;lol&quot;&gt;
  &lt;!ELEMENT lolz (#PCDATA)&gt;
- &lt;!ENTITY lol1 &quot;&lol;&lol;&lol;&lol;&lol;&lol;&lol;&lol;&lol;&lol;&quot;&gt;
- &lt;!ENTITY lol2 &quot;&lol1;&lol1;&lol1;&lol1;&lol1;&lol1;&lol1;&lol1;&lol1;&lol1;&quot;&gt;
- &lt;!ENTITY lol3 &quot;&lol2;&lol2;&lol2;&lol2;&lol2;&lol2;&lol2;&lol2;&lol2;&lol2;&quot;&gt;
+ &lt;!ENTITY lol1 &quot;&amp;lol;&amp;lol;&amp;lol;&amp;lol;&amp;lol;&amp;lol;&amp;lol;&amp;lol;&amp;lol;&amp;lol;&quot;&gt;
+ &lt;!ENTITY lol2 &quot;&amp;lol1;&amp;lol1;&amp;lol1;&amp;lol1;&amp;lol1;&amp;lol1;&amp;lol1;&amp;lol1;&amp;lol1;&amp;lol1;&quot;&gt;
+ &lt;!ENTITY lol3 &quot;&amp;lol2;&amp;lol2;&amp;lol2;&amp;lol2;&amp;lol2;&amp;lol2;&amp;lol2;&amp;lol2;&amp;lol2;&amp;lol2;&quot;&gt;
 [...]
- &lt;!ENTITY lol9 &quot;&lol8;&lol8;&lol8;&lol8;&lol8;&lol8;&lol8;&lol8;&lol8;&lol8;&quot;&gt;
+ &lt;!ENTITY lol9 &quot;&amp;lol8;&amp;lol8;&amp;lol8;&amp;lol8;&amp;lol8;&amp;lol8;&amp;lol8;&amp;lol8;&amp;lol8;&amp;lol8;&quot;&gt;
 ]&gt;
-&lt;lolz&gt;&lol9;&lt;/lolz&gt;</pre>
+&lt;lolz&gt;&amp;lol9;&lt;/lolz&gt;</pre>
 </p>
 
 <h3>解決策</h3>
@@ -1061,20 +1065,6 @@ XPath インジェクションのリスクは、SQL インジェクションに�
 </p>
 <br/>
 <p>
-    <b>追加のインジェクションソースの構成:</b><br/>
-    この検出器を使用するには手動での設定が必要です。<br/>
-    <br/>
-    形式に従って設定ファイルを作成します:
-    <pre>&lt;&lt;呼び出し命令&gt;&gt;|&lt;&lt;クラス名&gt;&gt;|&lt;&lt;メソッド&gt;&gt;|&lt;&lt;パラメーターシグネチャー&gt;&gt;=&lt;&lt;インジェクション可能なパラメーターのインデックス&gt;&gt;|&lt;&lt;検出器の説明の表示&gt;&gt;</pre>
-    例えば:
-    <pre>INVOKEVIRTUAL|testcode/sqli/MySqlWrapper|executeQuery|(Ljava/lang/String;)Ljava/sql/ResultSet;=0|CUSTOM_INJECTION
-[...]</pre>
-    <br/>
-    この問題はシステムプロパティが設定されてはじめて動作します。
-    <pre>-Dfindsecbugs.injection.sources=${basedir}/rules/InjectionSources.properties</pre>
-</p>
-<br/>
-<p>
 <b>参考文献</b><br/>
 <a href="http://projects.webappsec.org/w/page/13246963/SQL%20Injection">WASC-19: SQL Injection</a><br/>
 <a href="https://www.owasp.org/index.php/Top_10_2013-A1-Injection">OWASP: Top 10 2013-A1-Injection</a><br/>
@@ -1207,7 +1197,7 @@ SQL クエリーに含まれる入力値は安全に渡される必要があり�
     <pre>
 EntityManager pm = getEM();
 
-TypedQuery<UserEntity> q = em.createQuery(
+TypedQuery&lt;UserEntity&gt; q = em.createQuery(
     String.format("select * from Users where name = %s", username),
     UserEntity.class);
 
@@ -1216,7 +1206,7 @@ UserEntity res = q.getSingleResult();</pre>
 <p>
     <b>解決策:</b><br/>
     <pre>
-TypedQuery<UserEntity> q = em.createQuery(
+TypedQuery&lt;UserEntity&gt; q = em.createQuery(
     "select * from Users where name = usernameParam",UserEntity.class)
     .setParameter("usernameParam", username);
 
@@ -1239,6 +1229,85 @@ UserEntity res = q.getSingleResult();</pre>
     </BugPattern>
     <BugCode abbrev="SECSQLIJPA">SQL インジェクション (JPA)</BugCode>
 
+    <!-- SPRING JDBC Injection -->
+    <BugPattern type="SQL_INJECTION_SPRING_JDBC">
+        <ShortDescription>潜在的な JDBC インジェクション (Spring JDBC)</ShortDescription>
+        <LongDescription>このクエリーは、SQL/JPQL インジェクションに脆弱な可能性があります。</LongDescription>
+        <Details>
+            <![CDATA[
+<p>
+SQL クエリーに含まれる入力値は安全に渡される必要があります。
+プリペアードステートメントのバインド変数は、SQL インジェクションのリスクを容易に軽減するために使用することができます。
+</p>
+
+<p>
+    <b>脆弱なコード:</b><br/>
+    <pre>JdbcTemplate jdbc = new JdbcTemplate();
+int count = jdbc.queryForObject("select count(*) from Users where name = '"+paramName+"'", Integer.class);
+</pre>
+</p>
+<p>
+    <b>解決策:</b><br/>
+    <pre>JdbcTemplate jdbc = new JdbcTemplate();
+int count = jdbc.queryForObject("select count(*) from Users where name = ?", Integer.class, paramName);</pre>
+</p>
+<br/>
+
+<b>参考文献 (Spring JDBC)</b><br/>
+<a href="http://docs.spring.io/spring-framework/docs/current/spring-framework-reference/html/jdbc.html">Spring Official Documentation: Data access with JDBC</a><br/>
+<b>参考文献 (SQL インジェクション)</b><br/>
+<a href="http://projects.webappsec.org/w/page/13246963/SQL%20Injection">WASC-19: SQL Injection</a><br/>
+<a href="http://capec.mitre.org/data/definitions/66.html">CAPEC-66: SQL Injection</a><br/>
+<a href="http://cwe.mitre.org/data/definitions/89.html">CWE-89: Improper Neutralization of Special Elements used in an SQL Command ('SQL Injection')</a><br/>
+<a href="https://www.owasp.org/index.php/Top_10_2013-A1-Injection">OWASP: Top 10 2013-A1-Injection</a><br/>
+<a href="https://www.owasp.org/index.php/SQL_Injection_Prevention_Cheat_Sheet">OWASP: SQL Injection Prevention Cheat Sheet</a><br/>
+<a href="https://www.owasp.org/index.php/Query_Parameterization_Cheat_Sheet">OWASP: Query Parameterization Cheat Sheet</a><br/>
+</p>
+]]>
+        </Details>
+    </BugPattern>
+    <BugCode abbrev="SECSQLISPRJDBC">SQL インジェクション (Spring JDBC)</BugCode>
+
+    <!-- JDBC Injection -->
+    <BugPattern type="SQL_INJECTION_JDBC">
+        <ShortDescription>潜在的な JDBC インジェクション</ShortDescription>
+        <LongDescription>このクエリーは、SQL/JPQL インジェクションに脆弱な可能性があります。</LongDescription>
+        <Details>
+            <![CDATA[
+<p>
+SQL クエリーに含まれる入力値は安全に渡される必要があります。
+プリペアードステートメントのバインド変数は、SQL インジェクションのリスクを容易に軽減するために使用することができます。
+</p>
+
+<p>
+    <b>脆弱なコード:</b><br/>
+    <pre>Connection conn = [...];
+Statement stmt = con.createStatement();
+ResultSet rs = stmt.executeQuery("update COFFEES set SALES = "+nbSales+" where COF_NAME = '"+coffeeName+"'");</pre>
+</p>
+<p>
+    <b>解決策:</b><br/>
+    <pre>Connection conn = [...];
+conn.prepareStatement("update COFFEES set SALES = ? where COF_NAME = ?");
+updateSales.setInt(1, nbSales);
+updateSales.setString(2, coffeeName);</pre>
+</p>
+<br/>
+
+<b>参考文献 (JDBC)</b><br/>
+<a href="http://docs.oracle.com/javase/tutorial/jdbc/basics/prepared.html">Oracle Documentation: The Java Tutorials &gt; Prepared Statements</a><br/>
+<b>参考文献 (SQL インジェクション)</b><br/>
+<a href="http://projects.webappsec.org/w/page/13246963/SQL%20Injection">WASC-19: SQL Injection</a><br/>
+<a href="http://capec.mitre.org/data/definitions/66.html">CAPEC-66: SQL Injection</a><br/>
+<a href="http://cwe.mitre.org/data/definitions/89.html">CWE-89: Improper Neutralization of Special Elements used in an SQL Command ('SQL Injection')</a><br/>
+<a href="https://www.owasp.org/index.php/Top_10_2013-A1-Injection">OWASP: Top 10 2013-A1-Injection</a><br/>
+<a href="https://www.owasp.org/index.php/SQL_Injection_Prevention_Cheat_Sheet">OWASP: SQL Injection Prevention Cheat Sheet</a><br/>
+<a href="https://www.owasp.org/index.php/Query_Parameterization_Cheat_Sheet">OWASP: Query Parameterization Cheat Sheet</a><br/>
+</p>
+]]>
+        </Details>
+    </BugPattern>
+    <BugCode abbrev="SECSQLIJDBC">SQL インジェクション (JDBC)</BugCode>
 
     <!-- LDAP Injection -->
     <Detector class="com.h3xstream.findsecbugs.injection.ldap.LdapInjectionDetector">
@@ -1256,7 +1325,7 @@ SQL と同様に、LDAP クエリーに渡したすべての入力は安全に�
 </p>
 <p>
     <b>リスクのあるコード:</b><br/>
-    <pre>NamingEnumeration<SearchResult> answers = context.search("dc=People,dc=example,dc=com",
+    <pre>NamingEnumeration&lt;SearchResult&gt; answers = context.search("dc=People,dc=example,dc=com",
         "(uid=" + username + ")", ctrls);</pre>
 </p>
 <br/>
@@ -1606,8 +1675,8 @@ byte[] cipherText = c.doFinal(plainText);</pre>
         <Details>ハードコードされた Google API キーを特定します。</Details>
     </Detector>
 
-    <!-- Hard coded JNDI credentials -->
-    <Detector class="com.h3xstream.findsecbugs.password.JndiCredentialsDetector">
+    <!-- Hard coded JNDI credentials and other password in map -->
+    <Detector class="com.h3xstream.findsecbugs.password.HardcodePasswordInMapDetector">
         <Details>コンテキスト初期設定内にハードコードされた認証情報を特定します。</Details>
     </Detector>
 
@@ -1619,6 +1688,7 @@ byte[] cipherText = c.doFinal(plainText);</pre>
 <p>
 パスワードは、ソースコード内に保持すべきではありません。ソースコードは、企業環境では広く共有されることがあり、オープンソースでは確実に共有されています。
 安全に管理されるようにするには、パスワードや秘密鍵は別個の設定ファイルやキーストアに保存するべきです。
+(ハードコードされた鍵は別途<i>ハードコードされた鍵</i>パターンで報告されます)
 </p>
 <p>
 <p><b>脆弱なコード:</b><br/>
@@ -1631,13 +1701,41 @@ props.put(Context.SECURITY_CREDENTIALS, "p@ssw0rd");</pre>
 <br/>
 <p>
 <b>参考文献</b><br/>
-<a href="http://cwe.mitre.org/data/definitions/321.html">CWE-321: Use of Hard-coded Cryptographic Key</a><br/>
 <a href="http://cwe.mitre.org/data/definitions/259.html">CWE-259: Use of Hard-coded Password</a>
 </p>
 ]]>
         </Details>
     </BugPattern>
     <BugCode abbrev="SECHCP">ハードコードされたパスワード</BugCode>
+
+<BugPattern type="HARD_CODE_KEY">
+        <ShortDescription>ハードコードされた鍵</ShortDescription>
+        <LongDescription>ハードコードされた暗号化鍵を発見しました。</LongDescription>
+        <Details>
+            <![CDATA[
+<p>
+暗号化鍵は、ソースコード内に保持すべきではありません。ソースコードは、企業環境では広く共有されることがあり、オープンソースでは確実に共有されています。
+安全に管理されるようにするには、パスワードや秘密鍵は別個の設定ファイルやキーストアに保存するべきです。
+(ハードコードされたパスワードは別途<i>ハードコードされたパスワード</i>パターンで報告されます)
+</p>
+<p>
+<p><b>脆弱なコード:</b><br/>
+
+<pre>byte[] key = {1, 2, 3, 4, 5, 6, 7, 8};
+SecretKeySpec spec = new SecretKeySpec(key, "AES");
+Cipher aes = Cipher.getInstance("AES");
+aes.init(Cipher.ENCRYPT_MODE, spec);
+return aesCipher.doFinal(secretData);</pre>
+</p>
+<br/>
+<p>
+<b>参考文献</b><br/>
+<a href="http://cwe.mitre.org/data/definitions/321.html">CWE-321: Use of Hard-coded Cryptographic Key</a><br/>
+</p>
+]]>
+        </Details>
+    </BugPattern>
+    <BugCode abbrev="SECHCK">ハードコードされた鍵</BugCode>
 
 
     <!-- Struts Form Validation -->
@@ -1778,7 +1876,7 @@ keyGen.init(128);</pre>
         <LongDescription>弱い鍵長での RSA の使用</LongDescription>
         <Details>
             <![CDATA[
-<p><q>RSA 研究所は、現在、企業利用向けには 1024 ビット、認証局によって使用されるルート鍵ペアのような重要な鍵向けには 2048 ビットの鍵長を推奨しています。</q>
+<p><b>RSA 研究所は、現在、企業利用向けには 1024 ビット、認証局によって使用されるルート鍵ペアのような重要な鍵向けには 2048 ビットの鍵長を推奨しています。</b>
 <sup>[1]</sup></p>
 
 <p><b>脆弱なコード:</b><br/>
@@ -1866,7 +1964,7 @@ keyGen.initialize(2048);
 
 
     <!-- XSS in JSP -->
-    <Detector class="com.h3xstream.findsecbugs.jsp.JspXssDetector">
+    <Detector class="com.h3xstream.findsecbugs.xss.XssJspDetector">
         <Details>JSP ビュー内の汚染された入力を特定します。</Details>
     </Detector>
 
@@ -1875,10 +1973,6 @@ keyGen.initialize(2048);
         <LongDescription>JSP 内の潜在的な XSS</LongDescription>
         <Details>
             <![CDATA[
-<p>注: このルールを動かしたい場合は、JSP をプリコンパイルして (大抵ほとんどのビルド環境で行われません)、
-生成されたクラスファイルと元の JSP へのパス情報を FindBugs に与える必要があります。
-このルールの調査結果を見ているのであれば、あなたは環境を正しくセットアップすることを理解しています。
-また、この JSP 内の XSS ルールは同様の問題を探しますが、FindBugs の既存ルール「XSS: 反射型クロスサイトスクリプティング脆弱性がある JSP」とは異なる方法でそれらを探します。</p>
 <p>潜在的な XSS が見つかりました。これは、クライアントのブラウザーで不要な JavaScript を実行するために使用される可能性があります。 (参考文献を参照してください)
 </p>
 <p>
@@ -1967,7 +2061,7 @@ XSS に対する最善の防御策は、上記の例のような状況に応じ�
 
 
     <!-- XML decoder -->
-    <Detector class="com.h3xstream.findsecbugs.XmlDecoderDetector">
+    <Detector class="com.h3xstream.findsecbugs.xml.XmlDecoderDetector">
         <Details>XMLDecoder (危険な XML シリアライザー) の使用を特定します。</Details>
     </Detector>
 

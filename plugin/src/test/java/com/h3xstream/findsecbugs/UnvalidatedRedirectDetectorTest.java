@@ -21,9 +21,7 @@ import com.h3xstream.findbugs.test.BaseDetectorTest;
 import com.h3xstream.findbugs.test.EasyBugReporter;
 import org.testng.annotations.Test;
 
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 public class UnvalidatedRedirectDetectorTest extends BaseDetectorTest {
 
@@ -35,7 +33,7 @@ public class UnvalidatedRedirectDetectorTest extends BaseDetectorTest {
         };
 
         //Run the analysis
-        EasyBugReporter reporter = spy(new EasyBugReporter());
+        EasyBugReporter reporter = spy(new SecurityReporter());
         analyze(files, reporter);
 
 
@@ -44,6 +42,7 @@ public class UnvalidatedRedirectDetectorTest extends BaseDetectorTest {
                         .bugType("UNVALIDATED_REDIRECT")
                         .inClass("UnvalidatedRedirectServlet")
                         .inMethod("unvalidatedRedirect1")
+                        .withPriority("High")
                         .build()
         );
 
@@ -52,6 +51,7 @@ public class UnvalidatedRedirectDetectorTest extends BaseDetectorTest {
                         .bugType("UNVALIDATED_REDIRECT")
                         .inClass("UnvalidatedRedirectServlet")
                         .inMethod("unvalidatedRedirect2")
+                        .withPriority("Medium")
                         .build()
         );
 

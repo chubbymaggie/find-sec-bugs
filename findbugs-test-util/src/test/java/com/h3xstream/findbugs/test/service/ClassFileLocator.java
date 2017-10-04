@@ -17,9 +17,11 @@
  */
 package com.h3xstream.findbugs.test.service;
 
+import java.net.URISyntaxException;
 import java.net.URL;
 
 import static org.testng.Assert.assertNotNull;
+import static org.testng.Assert.fail;
 
 public class ClassFileLocator {
 
@@ -30,6 +32,10 @@ public class ClassFileLocator {
     public String getClassFilePath(String path) {
         ClassLoader cl = getClass().getClassLoader();
         URL url = cl.getResource(path + ".class");
+        if(url != null) {
+            return getFilenameFromUrl(url);
+        }
+        url = cl.getResource(path);
         assertNotNull(url, "No class found for the path = " + path);
         return getFilenameFromUrl(url);
     }
@@ -40,6 +46,9 @@ public class ClassFileLocator {
         //This is subject to change base on the JSP compiler implementation
         String generatedClassName = path.replaceAll("_","_005f").replace(".jsp","_jsp");
         URL url = cl.getResource("jsp/"+generatedClassName+".class");
+        if(url == null) {
+            url = cl.getResource("org/apache/jsp/"+generatedClassName+".class");
+        }
 
         assertNotNull(url, "No jsp file found for the path = " + path);
         return getFilenameFromUrl(url);
@@ -53,7 +62,13 @@ public class ClassFileLocator {
     }
 
     private String getFilenameFromUrl(URL url) {
-        String filename = url.toString();
+        String filename;
+		try {
+			filename = url.toURI().getPath();
+		} catch (final URISyntaxException e) {
+			fail("Failed to get file path = " + url, e);
+			return null;
+		}
 
         final String prefix = "file:";
         if (filename.startsWith(prefix)) {

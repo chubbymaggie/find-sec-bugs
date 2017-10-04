@@ -35,22 +35,39 @@ public class WeakMessageDigestDetectorTest extends BaseDetectorTest {
         };
 
         //Run the analysis
-        EasyBugReporter reporter = spy(new EasyBugReporter());
+        EasyBugReporter reporter = spy(new SecurityReporter());
         analyze(files, reporter);
 
         //Message Digest
-        for(int line : Arrays.asList(12,16,20)) {
+
+        for(int line : Arrays.asList(12,16)) {
             verify(reporter).doReportBug(
                     bugDefinition()
-                            .bugType("WEAK_MESSAGE_DIGEST")
+                            .bugType("WEAK_MESSAGE_DIGEST_MD5")
+                            .inClass("WeakMessageDigest").inMethod("main").atLine(line)
+                            .build()
+            );
+        }
+        //SHA1
+        for(int line : Arrays.asList(20,24,28)) {
+            verify(reporter).doReportBug(
+                    bugDefinition()
+                            .bugType("WEAK_MESSAGE_DIGEST_SHA1")
                             .inClass("WeakMessageDigest").inMethod("main").atLine(line)
                             .build()
             );
         }
 
+        verify(reporter,times(2)).doReportBug(
+                bugDefinition()
+                        .bugType("WEAK_MESSAGE_DIGEST_MD5")
+                        .inClass("WeakMessageDigest").inMethod("main")
+                        .build()
+        );
+
         verify(reporter,times(3)).doReportBug(
                 bugDefinition()
-                        .bugType("WEAK_MESSAGE_DIGEST")
+                        .bugType("WEAK_MESSAGE_DIGEST_SHA1")
                         .inClass("WeakMessageDigest").inMethod("main")
                         .build()
         );
@@ -64,24 +81,101 @@ public class WeakMessageDigestDetectorTest extends BaseDetectorTest {
         };
 
         //Run the analysis
-        EasyBugReporter reporter = spy(new EasyBugReporter());
+        EasyBugReporter reporter = spy(new SecurityReporter());
         analyze(files, reporter);
 
         //Message Digest
-        int l = 37;
-        for(int line : Arrays.asList(l++,l++,l++,l++, l+=2,l++,l++, l+=2,l++,l++)) {
+        for(int line = 45; line<=52;line++) {
             verify(reporter).doReportBug(
                     bugDefinition()
-                            .bugType("WEAK_MESSAGE_DIGEST")
+                            .bugType("WEAK_MESSAGE_DIGEST_MD5")
                             .inClass("WeakMessageDigest").inMethod("apacheApiVariations").atLine(line)
                             .build()
             );
         }
 
-        verify(reporter,times(10)).doReportBug(
+        for(int line = 54; line<=61;line++) {
+            verify(reporter).doReportBug(
+                    bugDefinition()
+                            .bugType("WEAK_MESSAGE_DIGEST_SHA1")
+                            .inClass("WeakMessageDigest").inMethod("apacheApiVariations").atLine(line)
+                            .build()
+            );
+        }
+
+        verify(reporter,times(8)).doReportBug(
                 bugDefinition()
-                        .bugType("WEAK_MESSAGE_DIGEST")
+                        .bugType("WEAK_MESSAGE_DIGEST_MD5")
                         .inClass("WeakMessageDigest").inMethod("apacheApiVariations")
+                        .build()
+        );
+        verify(reporter,times(8)).doReportBug(
+                bugDefinition()
+                        .bugType("WEAK_MESSAGE_DIGEST_SHA1")
+                        .inClass("WeakMessageDigest").inMethod("apacheApiVariations")
+                        .build()
+        );
+    }
+
+    @Test
+    public void detectWeakDigestAdditionalSignatures() throws Exception {
+        //Locate test code
+        String[] files = {
+                getClassFilePath("testcode/crypto/WeakMessageDigestAdditionalSig")
+        };
+
+        //Run the analysis
+        EasyBugReporter reporter = spy(new SecurityReporter());
+        analyze(files, reporter);
+
+        //MD5 Assertions
+        for(int line = 12; line <= 20; line++) {
+            verify(reporter).doReportBug(
+                    bugDefinition()
+                            .bugType("WEAK_MESSAGE_DIGEST_MD5")
+                            .inClass("WeakMessageDigestAdditionalSig").inMethod("weakDigestMoreSig").atLine(line)
+                            .build()
+            );
+        }
+        verify(reporter).doReportBug(
+                bugDefinition()
+                        .bugType("WEAK_MESSAGE_DIGEST_MD5")
+                        .inClass("WeakMessageDigestAdditionalSig").inMethod("weakDigestMoreSig").atLine(30)
+                        .build()
+        );
+        verify(reporter).doReportBug(
+                bugDefinition()
+                        .bugType("WEAK_MESSAGE_DIGEST_MD5")
+                        .inClass("WeakMessageDigestAdditionalSig").inMethod("weakDigestMoreSig").atLine(31)
+                        .build()
+        );
+
+        //SHA-1 Assertions
+        for(int line = 21; line <= 26; line++) {
+            verify(reporter).doReportBug(
+                    bugDefinition()
+                            .bugType("WEAK_MESSAGE_DIGEST_SHA1")
+                            .inClass("WeakMessageDigestAdditionalSig").inMethod("weakDigestMoreSig").atLine(line)
+                            .build()
+            );
+        }
+        verify(reporter).doReportBug(
+                bugDefinition()
+                        .bugType("WEAK_MESSAGE_DIGEST_SHA1")
+                        .inClass("WeakMessageDigestAdditionalSig").inMethod("weakDigestMoreSig").atLine(32)
+                        .build()
+        );
+
+        verify(reporter,times(11)).doReportBug(
+                bugDefinition()
+                        .bugType("WEAK_MESSAGE_DIGEST_MD5")
+                        .inClass("WeakMessageDigestAdditionalSig").inMethod("weakDigestMoreSig")
+                        .build()
+        );
+        verify(reporter,times(7)).doReportBug(
+                bugDefinition()
+                        .bugType("WEAK_MESSAGE_DIGEST_SHA1")
+                        .inClass("WeakMessageDigestAdditionalSig").inMethod("weakDigestMoreSig")
                         .build()
         );
     }

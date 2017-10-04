@@ -35,7 +35,7 @@ public class StaticIvDetectorTest extends BaseDetectorTest {
         };
 
         //Run the analysis
-        EasyBugReporter reporter = spy(new EasyBugReporter());
+        EasyBugReporter reporter = spy(new SecurityReporter());
         analyze(files, reporter);
 
         //Assertions
@@ -58,7 +58,7 @@ public class StaticIvDetectorTest extends BaseDetectorTest {
         };
 
         //Run the analysis
-        EasyBugReporter reporter = spy(new EasyBugReporter());
+        EasyBugReporter reporter = spy(new SecurityReporter());
         analyze(files, reporter);
 
         //Assertions
@@ -76,14 +76,14 @@ public class StaticIvDetectorTest extends BaseDetectorTest {
     }
 
     @Test
-    public void avoidFalsePositive() throws Exception {
+    public void avoidFalsePositiveSecRandom() throws Exception {
         //Locate test code
         String[] files = {
                 getClassFilePath("testcode/crypto/iv/SafeIvGeneration")
         };
 
         //Run the analysis
-        EasyBugReporter reporter = spy(new EasyBugReporter());
+        EasyBugReporter reporter = spy(new SecurityReporter());
         analyze(files, reporter);
 
         //Assertions
@@ -94,4 +94,42 @@ public class StaticIvDetectorTest extends BaseDetectorTest {
         );
     }
 
+    @Test
+    public void avoidFalsePositiveDecrypt() throws Exception {
+        //Locate test code
+        String[] files = {
+                getClassFilePath("testcode/crypto/iv/StaticIvDecrypt")
+        };
+
+        //Run the analysis
+        EasyBugReporter reporter = spy(new SecurityReporter());
+        analyze(files, reporter);
+
+        //Assertions
+
+        //Not bug should be report
+        verify(reporter,never()).doReportBug( //
+                bugDefinition().bugType("STATIC_IV").inClass("StaticIvDecrypt").build()
+        );
+    }
+
+
+    @Test
+    public void avoidFalsePositiveGenerateWithKeyGenerator() throws Exception {
+        //Locate test code
+        String[] files = {
+                getClassFilePath("testcode/crypto/iv/SafeApacheCamelCipherPair")
+        };
+
+        //Run the analysis
+        EasyBugReporter reporter = spy(new SecurityReporter());
+        analyze(files, reporter);
+
+        //Assertions
+
+        //Not bug should be report
+        verify(reporter,never()).doReportBug( //
+                bugDefinition().bugType("STATIC_IV").inClass("SafeApacheCamelCipherPair").build()
+        );
+    }
 }

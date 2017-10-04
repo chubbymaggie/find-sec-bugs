@@ -22,6 +22,7 @@ import com.h3xstream.findbugs.test.EasyBugReporter;
 import org.testng.annotations.Test;
 
 import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 public class JndiLdapInjectionSourceTest extends BaseDetectorTest {
@@ -34,7 +35,7 @@ public class JndiLdapInjectionSourceTest extends BaseDetectorTest {
         };
 
         //Run the analysis
-        EasyBugReporter reporter = spy(new EasyBugReporter());
+        EasyBugReporter reporter = spy(new SecurityReporter());
         analyze(files, reporter);
 
         verify(reporter).doReportBug(
@@ -43,6 +44,10 @@ public class JndiLdapInjectionSourceTest extends BaseDetectorTest {
                         .inClass("JndiLdap")
                         .atLine(45)
                         .build()
+        );
+        
+        verify(reporter, times(1)).doReportBug(
+                bugDefinition().bugType("LDAP_INJECTION").build()
         );
     }
 }
